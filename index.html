@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fałszywe Logowanie z Danymi Osobowymi</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #1c1f2b;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+  .container {
+    background-color: #282c3a;
+    padding: 20px;
+    border-radius: 10px;
+    width: 320px;
+    text-align: center;
+  }
+  input[type="text"], input[type="email"], input[type="password"], input[type="number"] {
+    width: 90%;
+    padding: 8px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: none;
+    font-size: 16px;
+  }
+  button {
+    background-color: #4285f4;
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 95%;
+  }
+  button:hover {
+    background-color: #3367d6;
+  }
+  #purchaseResult {
+    margin-top: 15px;
+    font-weight: bold;
+  }
+  .hidden {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="loginContainer">
+  <h2>Zaloguj się</h2>
+  <input type="text" id="firstName" placeholder="Imię" required />
+  <input type="email" id="email" placeholder="Email" required />
+  <input type="password" id="password" placeholder="Hasło" required />
+  <input type="text" id="cardNumber" placeholder="Numer karty kredytowej" maxlength="16" required />
+  <input type="text" id="cardExpiry" placeholder="Data ważności (MM/RR)" maxlength="5" required />
+  <input type="text" id="cardCVC" placeholder="CVC" maxlength="3" required />
+  <button id="loginBtn">Zaloguj się</button>
+</div>
+
+<div class="container hidden" id="purchaseContainer">
+  <h3>Witaj, <span id="userName"></span>!</h3>
+  <p>Kup ITStep Coin i obserwuj wzrost ceny!</p>
+  <label for="coinAmount">Ile monet chcesz kupić?</label>
+  <input type="number" id="coinAmount" min="1" value="1" />
+  <button id="buyBtn">Kup</button>
+  <div id="purchaseResult"></div>
+  <button id="logoutBtn" style="background-color:#e03b3b; margin-top: 20px;">Wyloguj się</button>
+</div>
+
+<script>
+  const loginContainer = document.getElementById('loginContainer');
+  const purchaseContainer = document.getElementById('purchaseContainer');
+  const loginBtn = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const userNameSpan = document.getElementById('userName');
+  const buyBtn = document.getElementById('buyBtn');
+  const purchaseResult = document.getElementById('purchaseResult');
+
+  loginBtn.addEventListener('click', () => {
+    const firstName = document.getElementById('firstName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const cardNumber = document.getElementById('cardNumber').value.trim();
+    const cardExpiry = document.getElementById('cardExpiry').value.trim();
+    const cardCVC = document.getElementById('cardCVC').value.trim();
+
+    if (!firstName || !email || !password || !cardNumber || !cardExpiry || !cardCVC) {
+      alert('Wypełnij wszystkie pola!');
+      return;
+    }
+
+    if (cardNumber.length !== 16 || !/^\d{16}$/.test(cardNumber)) {
+      alert('Numer karty musi mieć 16 cyfr!');
+      return;
+    }
+
+    if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+      alert('Data ważności musi mieć format MM/RR!');
+      return;
+    }
+
+    if (cardCVC.length !== 3 || !/^\d{3}$/.test(cardCVC)) {
+      alert('CVC musi mieć 3 cyfry!');
+      return;
+    }
+
+    // Fałszywe logowanie - akceptujemy wszystko, nic nie wysyłamy
+    userNameSpan.textContent = firstName;
+    loginContainer.classList.add('hidden');
+    purchaseContainer.classList.remove('hidden');
+    purchaseResult.textContent = '';
+    document.getElementById('coinAmount').value = 1;
+  });
+
+  buyBtn.addEventListener('click', () => {
+    const amount = parseInt(document.getElementById('coinAmount').value, 10);
+    if (!amount || amount < 1) {
+      alert('Podaj poprawną ilość monet do kupienia (minimum 1).');
+      return;
+    }
+    const pricePerCoin = 10;
+    const totalPrice = amount * pricePerCoin;
+    purchaseResult.textContent = `Kupiłeś ${amount} ITStep Coin za ${totalPrice} PLN. Dziękujemy za zakup!`;
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    purchaseContainer.classList.add('hidden');
+    loginContainer.classList.remove('hidden');
+    document.getElementById('firstName').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('cardNumber').value = '';
+    document.getElementById('cardExpiry').value = '';
+    document.getElementById('cardCVC').value = '';
+  });
+</script>
+
+</body>
+</html>
